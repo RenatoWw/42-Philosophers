@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/07 22:08:44 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/21 17:44:46 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ int	ft_atoi(const char *nptr)
 
 int	set_philo_args(t_philo_info *info, int argc, char *argv[])
 {
+	struct timeval	start_time;
+
+	gettimeofday(&start_time, NULL);
+	info->start_time = start_time;
 	if (argc != 5 && argc != 6)
 		return (1);
 	info->num_philos = ft_atoi(argv[1]);

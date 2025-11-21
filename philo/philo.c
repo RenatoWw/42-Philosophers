@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 15:53:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/07 22:16:27 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/21 18:20:01 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,72 +14,139 @@
 
 void	*routine(void *args)
 {
-	t_philo_info	info;
-	int				i;
+	t_philo	*philos;
+	int		i;
 
-	info = *(t_philo_info *) args;
+	philos = (t_philo *) args;
 	i = 0;
-	while (i < info.num_philos)
-	{
-		printf("oi\n");
-		i++;
-	}
+	printf("num_philos: %d\n", philos->num_philos);
+	// while (i < table.info->num_philos)
+	// {
+	// 	printf("Philosopher: %d\n", table.philo->philosopher_id);
+	// 	printf("i: %d\n", i);
+	// 	i++;
+	// }
 	return (NULL);
 }
 
-int	main(int argc, char *argv[])
+void	ft_sleep(int milliseconds)
 {
-	t_philo_info	info;
-	t_philo			*philosophers;
+	usleep(milliseconds * 1000);
+}
+
+void	ft_print_time(struct timeval start_time)
+{
+	struct timeval	current_time;
+	unsigned long	current_time_in_mc;
+	unsigned long	elapsed_time;
+
+	gettimeofday(&current_time, NULL);
+	current_time_in_mc = 1000000 * current_time.tv_sec + current_time.tv_usec;
+	elapsed_time = 1000000 * start_time.tv_sec + start_time.tv_usec;
+	printf("%ld\n", current_time_in_mc / 1000 - elapsed_time / 1000);
+}
+
+void	set_philo_info(t_philo *philosophers, t_philo_info *info)
+{
+	struct timeval start_time;
 	int				i;
 
-	if (set_philo_args(&info, argc, argv) != 0)
-		return (1);
-	// printf("num_philos: %d\n", info.num_philos);
-	philosophers = malloc(sizeof(t_philo) * info.num_philos);
-	if (!philosophers)
-		return (1);
 	i = 0;
-	while (i < info.num_philos)
+	gettimeofday(&start_time, NULL);
+	while (i < info->num_philos)
 	{
 		philosophers[i].philosopher_id = i + 1;
 		philosophers[i].is_dead = 0;
+		philosophers[i].meals_eaten = 0;
+		philosophers[i].start_time = start_time;
+		philosophers[i].meals_num = info->meals_num;
+		philosophers[i].num_philos = info->num_philos;
+		philosophers[i].time_to_die = info->time_to_die;
+		philosophers[i].time_to_eat = info->time_to_eat;
+		philosophers[i].time_to_sleep = info->time_to_sleep;
 		i++;
 	}
-	create_forks(&info);
+	if (create_forks(info) == 1)
+	{
+		printf("Error creating Fork.");
+		destroy_forks(info);
+		exit(1);
+	}
+	assign_forks(info, philosophers);
+}
+
+void	ft_print_forks(t_philo_info info, t_philo *philosophers)
+{
+	int	i;
+
 	i = 0;
 	while (i < info.num_philos)
 	{
 		printf("Fork %d: %p\n", i, &info.forks[i]);
 		i++;
 	}
-	assign_forks(&info, philosophers);
 	i = 0;
 	while (i < info.num_philos)
 	{
-		printf("Philosopher %d\nLeft fork:  %p\nRight fork: %p\n", philosophers[i].philosopher_id, philosophers[i].left_fork, philosophers[i].right_fork);
+		printf("Philosopher %d\nLeft fork:  %p\nRight fork: %p\n",
+			philosophers[i].philosopher_id,
+			philosophers[i].left_fork,
+			philosophers[i].right_fork);
 		i++;
 	}
+}
+
+void	create_threads(t_philo_info info, t_philo *philosophers)
+{
+	int	i;
+
 	i = 0;
 	while (i < info.num_philos)
 	{
-		if (pthread_create(&philosophers->philosopher, NULL, &routine, &info) != 0)
+		if (pthread_create(&philosophers[i].philosopher, NULL, &routine, &philosophers) != 0)
 		{
 			printf("Error creating philosopher.\n");
-			return (1);
+			exit(1);
 		}
 		i++;
 	}
+}
+
+void	join_threads(t_philo_info info, t_philo *philosophers)
+{
+	int	i;
+
 	i = 0;
 	while (i < info.num_philos)
 	{
-		if (pthread_join(philosophers->philosopher, NULL) != 0)
+		if (pthread_join(philosophers[i].philosopher, NULL) != 0)
 		{
-			printf("Error ending philosopher.\n");
-			return (1);
+			printf("Error joining philosopher.\n");
+			exit(1);
 		}
 		i++;
 	}
+}
+
+int	main(int argc, char *argv[])
+{
+	t_philo_info	info;
+	t_philo			*philosophers;
+	// int				i;
+
+	if (set_philo_args(&info, argc, argv) != 0)
+		return (1);
+	ft_print_time(info.start_time);
+	ft_sleep(info.time_to_die);
+	ft_print_time(info.start_time);
+	philosophers = malloc(sizeof(t_philo) * info.num_philos);
+	if (!philosophers)
+		return (1);
+	set_philo_info(philosophers, &info);
+	// ft_print_forks(info, philosophers);
+	// pthread_create(&philosophers[i].philosopher, NULL, &routine, &philosophers);
+	// create_threads(info, philosophers);
+	// join_threads(info, philosophers);
 	free(philosophers);
 	destroy_forks(&info);
 	return (0);

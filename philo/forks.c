@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:07:07 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/07 22:07:30 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/21 18:07:16 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int	create_forks(t_philo_info *info)
 	while (i < info->num_philos)
 	{
 		if (pthread_mutex_init(&info->forks[i], NULL) != 0)
-			// free/destroy mutexes and return 1
 			return (1);
 		i++;
 	}
