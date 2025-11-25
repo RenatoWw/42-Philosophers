@@ -1,7 +1,10 @@
 NAME = philo
 SRCS = philo.c \
 		utils.c \
-		forks.c
+		forks.c \
+		time.c \
+		routine.c
+
 CC = cc
 CFLAGS = -Wall -Werror -Wextra -I. -pthread
 OBJ_DIR = objs/

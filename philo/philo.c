@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 15:53:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/21 18:20:01 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/25 18:55:10 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,91 +19,34 @@ void	*routine(void *args)
 
 	philos = (t_philo *) args;
 	i = 0;
-	printf("num_philos: %d\n", philos->num_philos);
-	// while (i < table.info->num_philos)
-	// {
-	// 	printf("Philosopher: %d\n", table.philo->philosopher_id);
-	// 	printf("i: %d\n", i);
-	// 	i++;
-	// }
+	while (1)
+	{
+		if (philos->philosopher_id % 2 == 0)
+			usleep(philos->info_table->time_to_eat * 500);
+		take_left_fork(philos);
+		take_right_fork(philos);
+		ph_eat(philos);
+		ph_sleep(philos);
+		ph_think(philos);
+		if (philos->meals_eaten == philos->info_table->meals_num)
+		{
+			printf(GREEN "All philosophers finished eating.\n" RESET);
+			exit(1);
+		}
+		i++;
+	}
 	return (NULL);
-}
-
-void	ft_sleep(int milliseconds)
-{
-	usleep(milliseconds * 1000);
-}
-
-void	ft_print_time(struct timeval start_time)
-{
-	struct timeval	current_time;
-	unsigned long	current_time_in_mc;
-	unsigned long	elapsed_time;
-
-	gettimeofday(&current_time, NULL);
-	current_time_in_mc = 1000000 * current_time.tv_sec + current_time.tv_usec;
-	elapsed_time = 1000000 * start_time.tv_sec + start_time.tv_usec;
-	printf("%ld\n", current_time_in_mc / 1000 - elapsed_time / 1000);
-}
-
-void	set_philo_info(t_philo *philosophers, t_philo_info *info)
-{
-	struct timeval start_time;
-	int				i;
-
-	i = 0;
-	gettimeofday(&start_time, NULL);
-	while (i < info->num_philos)
-	{
-		philosophers[i].philosopher_id = i + 1;
-		philosophers[i].is_dead = 0;
-		philosophers[i].meals_eaten = 0;
-		philosophers[i].start_time = start_time;
-		philosophers[i].meals_num = info->meals_num;
-		philosophers[i].num_philos = info->num_philos;
-		philosophers[i].time_to_die = info->time_to_die;
-		philosophers[i].time_to_eat = info->time_to_eat;
-		philosophers[i].time_to_sleep = info->time_to_sleep;
-		i++;
-	}
-	if (create_forks(info) == 1)
-	{
-		printf("Error creating Fork.");
-		destroy_forks(info);
-		exit(1);
-	}
-	assign_forks(info, philosophers);
-}
-
-void	ft_print_forks(t_philo_info info, t_philo *philosophers)
-{
-	int	i;
-
-	i = 0;
-	while (i < info.num_philos)
-	{
-		printf("Fork %d: %p\n", i, &info.forks[i]);
-		i++;
-	}
-	i = 0;
-	while (i < info.num_philos)
-	{
-		printf("Philosopher %d\nLeft fork:  %p\nRight fork: %p\n",
-			philosophers[i].philosopher_id,
-			philosophers[i].left_fork,
-			philosophers[i].right_fork);
-		i++;
-	}
 }
 
 void	create_threads(t_philo_info info, t_philo *philosophers)
 {
-	int	i;
+	int		i;
 
 	i = 0;
 	while (i < info.num_philos)
 	{
-		if (pthread_create(&philosophers[i].philosopher, NULL, &routine, &philosophers) != 0)
+		if (pthread_create(&philosophers[i].philosopher, NULL,
+				&routine, &philosophers[i]) != 0)
 		{
 			printf("Error creating philosopher.\n");
 			exit(1);
@@ -128,26 +71,37 @@ void	join_threads(t_philo_info info, t_philo *philosophers)
 	}
 }
 
-int	main(int argc, char *argv[])
+void	monitor_routine(void *args)
 {
+	t_philo	*philos;
+	int		i;
+
+	philos = (t_philo *) args;
+	while (1)
+	{
+		i = 0;
+		while (i < philos->info_table->num_philos)
+		{
+		}
+	}
+}
+
+int	main(int argc, char *argv[])
+{	
 	t_philo_info	info;
 	t_philo			*philosophers;
-	// int				i;
+	int				i;
 
 	if (set_philo_args(&info, argc, argv) != 0)
 		return (1);
-	ft_print_time(info.start_time);
-	ft_sleep(info.time_to_die);
-	ft_print_time(info.start_time);
-	philosophers = malloc(sizeof(t_philo) * info.num_philos);
-	if (!philosophers)
-		return (1);
-	set_philo_info(philosophers, &info);
-	// ft_print_forks(info, philosophers);
-	// pthread_create(&philosophers[i].philosopher, NULL, &routine, &philosophers);
-	// create_threads(info, philosophers);
-	// join_threads(info, philosophers);
-	free(philosophers);
-	destroy_forks(&info);
+	philosophers = set_philo_info(&info);
+	if (init_mutexes(&info, philosophers) != 0)
+		return (1); // free e depois return?
+	i = 0;
+	create_threads(info, philosophers);
+	// create_monitor(info, philosophers);
+	join_threads(info, philosophers);
+	free(philosophers); // free em cada philosopher?
+	destroy_mutexes(&info);
 	return (0);
 }

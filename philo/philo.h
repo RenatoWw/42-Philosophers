@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 16:30:47 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/21 18:10:42 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/25 18:53:21 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,14 @@
 # include <unistd.h>
 # include <sys/time.h>
 
+# define RED "\033[31m"
+# define GREEN "\033[32m"
+# define RESET "\033[0m"
+
 typedef struct s_philo_info {
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	*write_lock;
+	pthread_mutex_t	*meal_lock;
 	int				num_philos;
 	int				time_to_die;	
 	int				time_to_eat;
@@ -31,13 +37,10 @@ typedef struct s_philo_info {
 
 typedef struct s_philo {
 	pthread_t		philosopher;
+	t_philo_info	*info_table;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
-	int				num_philos;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				meals_num;
+	long long		last_meal_time;
 	int				meals_eaten;
 	int				philosopher_id;
 	int				is_dead;
@@ -49,11 +52,21 @@ typedef struct s_table {
 	t_philo_info	info;
 }	t_table;
 
+int			ft_atoi(const char *nptr);
+int			set_philo_args(t_philo_info *info, int argc, char *argv[]);
+int			init_mutexes(t_philo_info *info, t_philo *philosophers);
+void		destroy_mutexes(t_philo_info *info);
+void		assign_forks(t_philo_info *info, t_philo *philosophers);
+void		ft_sleep(int milliseconds);
+void		ft_print_forks(t_philo_info info, t_philo *philosophers);
+long long	return_time(struct timeval start_time);
 
-int		ft_atoi(const char *nptr);
-int		set_philo_args(t_philo_info *info, int argc, char *argv[]);
-int		create_forks(t_philo_info *info);
-void	destroy_forks(t_philo_info *info);
-void	assign_forks(t_philo_info *info, t_philo *philosophers);
+void		ph_eat(t_philo *philos);
+void		ph_sleep(t_philo *philos);
+void		ph_think(t_philo *philos);
+void		take_left_fork(t_philo *philos);
+void		take_right_fork(t_philo *philos);
+
+t_philo		*set_philo_info(t_philo_info *info);
 
 #endif

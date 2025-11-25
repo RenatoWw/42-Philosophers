@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/21 17:44:46 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/25 18:43:22 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,29 @@ int	ft_atoi(const char *nptr)
 		num = (num * 10) + *nptr++ - '0';
 	}
 	return (num * signal);
+}
+
+t_philo	*set_philo_info(t_philo_info *info)
+{
+	struct timeval	start_time;
+	t_philo			*philosophers;
+	int				i;
+
+	philosophers = malloc(sizeof(t_philo) * info->num_philos);
+	if (!philosophers)
+		return (NULL);
+	i = 0;
+	gettimeofday(&start_time, NULL);
+	while (i < info->num_philos)
+	{
+		philosophers[i].philosopher_id = i + 1;
+		philosophers[i].is_dead = 0;
+		philosophers[i].meals_eaten = 0;
+		philosophers[i].start_time = start_time;
+		philosophers[i].info_table = info;
+		i++;
+	}
+	return (philosophers);
 }
 
 int	set_philo_args(t_philo_info *info, int argc, char *argv[])
