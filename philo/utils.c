@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/25 18:43:22 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/27 17:40:32 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ t_philo	*set_philo_info(t_philo_info *info)
 	while (i < info->num_philos)
 	{
 		philosophers[i].philosopher_id = i + 1;
-		philosophers[i].is_dead = 0;
 		philosophers[i].meals_eaten = 0;
 		philosophers[i].start_time = start_time;
 		philosophers[i].info_table = info;
@@ -65,6 +64,7 @@ int	set_philo_args(t_philo_info *info, int argc, char *argv[])
 	info->start_time = start_time;
 	if (argc != 5 && argc != 6)
 		return (1);
+	info->simulation_running = 1;
 	info->num_philos = ft_atoi(argv[1]);
 	info->time_to_die = ft_atoi(argv[2]);
 	info->time_to_eat = ft_atoi(argv[3]);

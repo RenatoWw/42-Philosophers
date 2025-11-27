@@ -3,7 +3,8 @@ SRCS = philo.c \
 		utils.c \
 		forks.c \
 		time.c \
-		routine.c
+		routine.c \
+		threads.c
 
 CC = cc
 CFLAGS = -Wall -Werror -Wextra -I. -pthread
