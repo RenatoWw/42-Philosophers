@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 14:36:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 13:43:59 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:08:47 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,20 @@
 
 void	ft_sleep(int milliseconds)
 {
-	usleep(milliseconds * 1000);
+	struct timeval	time;
+	long long		current_time;
+	long long		start_time;
+
+	gettimeofday(&time, NULL);
+	start_time = time_to_ms(time);
+	while (1)
+	{
+		gettimeofday(&time, NULL);
+		current_time = time_to_ms(time);
+		if (current_time - start_time >= milliseconds)
+			break;
+		usleep(50);
+	}
 }
 
 long long	return_time(struct timeval start_time)
@@ -31,7 +44,7 @@ long long	return_time(struct timeval start_time)
 
 long long	time_to_ms(struct timeval time)
 {
-	long long milliseconds;
+	long long	milliseconds;
 
 	milliseconds = (time.tv_sec * 1000) + (time.tv_usec / 1000);
 	return (milliseconds);

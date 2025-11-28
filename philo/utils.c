@@ -6,21 +6,22 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 14:31:44 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:00:08 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	stop_simulation(struct timeval current_time, int i, t_philo *philos)
+int	check_phil_death(t_philo *philos)
 {
-	pthread_mutex_lock(philos[i].info_table->dead_lock);
-	philos[i].info_table->simulation_running = 0;
-	pthread_mutex_unlock(philos[i].info_table->dead_lock);
-	pthread_mutex_lock(philos[i].info_table->write_lock);
-	printf("%d: %lld\n", philos[i].philosopher_id, time_to_ms(current_time) - philos[i].last_meal_time);
-	printf(RED "%d MORREU!!!!!\n" RESET, philos[i].philosopher_id);
-	pthread_mutex_unlock(philos[i].info_table->write_lock);
+	pthread_mutex_lock(philos->info_table->dead_lock);
+	if (philos->info_table->simulation_running == 0)
+	{
+		pthread_mutex_unlock(philos->info_table->dead_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(philos->info_table->dead_lock);
+	return (0);
 }
 
 int	ft_atoi(const char *nptr)

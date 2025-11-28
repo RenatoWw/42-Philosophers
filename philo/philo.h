@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 16:30:47 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 14:40:23 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:00:12 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,9 @@ long long	time_to_ms(struct timeval time);
 void		ph_eat(t_philo *philos);
 void		ph_sleep(t_philo *philos);
 void		ph_think(t_philo *philos);
-// int			take_both_forks(t_philo *philos);
 int			take_left_fork(t_philo *philos);
 int			take_right_fork(t_philo *philos);
 int			check_phil_death(t_philo *philos);
-
 
 t_philo		*set_philo_info(t_philo_info *info);
 
@@ -79,6 +77,5 @@ void		join_threads(t_philo_info info, t_philo *philosophers);
 
 void		*philo_routine(void *args);
 void		*monitor_routine(void *args);
-void	stop_simulation(struct timeval current_time, int i, t_philo *philos);
 
 #endif
