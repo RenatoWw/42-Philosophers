@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 14:36:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/25 18:42:21 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 13:43:59 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,12 @@ long long	return_time(struct timeval start_time)
 	current_time_in_mc = 1000000 * current_time.tv_sec + current_time.tv_usec;
 	elapsed_time = 1000000 * start_time.tv_sec + start_time.tv_usec;
 	return (current_time_in_mc / 1000 - elapsed_time / 1000);
+}
+
+long long	time_to_ms(struct timeval time)
+{
+	long long milliseconds;
+
+	milliseconds = (time.tv_sec * 1000) + (time.tv_usec / 1000);
+	return (milliseconds);
 }

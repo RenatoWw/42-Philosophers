@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:07:07 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/27 17:49:46 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 13:32:58 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	destroy_mutexes(t_philo_info *info)
 	pthread_mutex_destroy(info->meal_lock);
 	pthread_mutex_destroy(info->dead_lock);
 	free(info->forks);
-	free(info->write_lock); // free em cada info[i]?
+	free(info->write_lock);
 	free(info->meal_lock);
 	free(info->dead_lock);
 }

@@ -6,11 +6,22 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/27 17:40:32 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 14:31:44 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	stop_simulation(struct timeval current_time, int i, t_philo *philos)
+{
+	pthread_mutex_lock(philos[i].info_table->dead_lock);
+	philos[i].info_table->simulation_running = 0;
+	pthread_mutex_unlock(philos[i].info_table->dead_lock);
+	pthread_mutex_lock(philos[i].info_table->write_lock);
+	printf("%d: %lld\n", philos[i].philosopher_id, time_to_ms(current_time) - philos[i].last_meal_time);
+	printf(RED "%d MORREU!!!!!\n" RESET, philos[i].philosopher_id);
+	pthread_mutex_unlock(philos[i].info_table->write_lock);
+}
 
 int	ft_atoi(const char *nptr)
 {
@@ -49,6 +60,7 @@ t_philo	*set_philo_info(t_philo_info *info)
 	{
 		philosophers[i].philosopher_id = i + 1;
 		philosophers[i].meals_eaten = 0;
+		philosophers[i].last_meal_time = time_to_ms(start_time);
 		philosophers[i].start_time = start_time;
 		philosophers[i].info_table = info;
 		i++;

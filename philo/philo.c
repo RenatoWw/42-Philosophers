@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 15:53:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/27 19:36:32 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/11/28 14:41:18 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	check_phil_death(t_philo *philos)
 	return (0);
 }
 
-void	*routine(void *args)
+void	*philo_routine(void *args)
 {
 	t_philo	*philos;
 	int		i;
@@ -32,30 +32,18 @@ void	*routine(void *args)
 	philos = (t_philo *) args;
 	i = 0;
 	if (philos->philosopher_id % 2 == 0)
-		usleep(philos->info_table->time_to_eat * 500);
+		usleep(10);
 	while (1)
 	{
-		// criar função check_death
-		if (check_phil_death(philos) == 1)
-			break ;
-		// pthread_mutex_lock(philos->info_table->dead_lock);
-		// if (philos->info_table->simulation_running == 0)
-		// {
-		// 	pthread_mutex_unlock(philos->info_table->dead_lock);
-		// 	break ;
-		// 	// return (1);
-		// }
-		pthread_mutex_unlock(philos->info_table->dead_lock);
 		ph_eat(philos);
-		
 		if (check_phil_death(philos) == 1)
 			break ;
-
 		ph_sleep(philos);
-		
 		if (check_phil_death(philos) == 1)
 			break ;
 		ph_think(philos);
+		if (check_phil_death(philos) == 1)
+			break ;
 		i++;
 	}
 	return (NULL);
@@ -63,8 +51,8 @@ void	*routine(void *args)
 
 void	*monitor_routine(void *args)
 {
-	// struct timeval	current_time;
-	// long long		time_since_meal;
+	struct timeval	current_time;
+	long long		time_since_meal;
 	t_philo			*philos;
 	int				i;
 
@@ -74,26 +62,15 @@ void	*monitor_routine(void *args)
 		i = 0;
 		while (i < philos[0].info_table->num_philos)
 		{
-			// gettimeofday(&current_time, NULL);
-			// printf("oi\n");
-			// time_since_meal = return_time(current_time) - philos[i].last_meal_time;
-			// pthread_mutex_unlock(philos[i].info_table->meal_lock);
-			// pthread_mutex_lock(philos[i].info_table->write_lock);
-			// printf("time_since_meal: %lld\n", time_since_meal);
-			// ft_sleep(10);
-			// pthread_mutex_unlock(philos[i].info_table->write_lock);
-			// printf("%d: last_meal_time: %lld\n", time_since_meal);
-			// if (time_since_meal > philos[i].info_table->time_to_die)
-			// {
-			// 	pthread_mutex_lock(philos[i].info_table->dead_lock);
-			// 	philos[i].info_table->simulation_running = 0;
-			// 	pthread_mutex_unlock(philos[i].info_table->dead_lock);
-			// 	pthread_mutex_lock(philos[i].info_table->write_lock);
-			// 	printf("%d: %lld\n", philos[i].philosopher_id, philos[i].last_meal_time);
-			// 	printf(RED "%d MORREU!!!!!\n" RESET, philos[i].philosopher_id);
-			// 	pthread_mutex_unlock(philos[i].info_table->write_lock);
-			// 	return (NULL);
-			// }
+			gettimeofday(&current_time, NULL);
+			pthread_mutex_lock(philos[i].info_table->meal_lock);
+			time_since_meal = time_to_ms(current_time) - philos[i].last_meal_time;
+			pthread_mutex_unlock(philos[i].info_table->meal_lock);
+			if (time_since_meal > philos[i].info_table->time_to_die)
+			{
+				stop_simulation(current_time, i, philos);
+				return (NULL);
+			}
 			i++;
 		}
 		usleep(500);
@@ -105,12 +82,13 @@ void	*monitor_routine(void *args)
 // if (last metal time - current_time > info->time_to_die)
 // morreu
 // é assim??
+// timestamp_in_ms X is eating etc
 
 int	main(int argc, char *argv[])
 {	
 	t_philo_info	info;
 	t_philo			*philosophers;
-	// pthread_t		monitor;
+	pthread_t		monitor;
 	int				i;
 
 	if (set_philo_args(&info, argc, argv) != 0)
@@ -127,11 +105,11 @@ int	main(int argc, char *argv[])
 	// // gettimeofday(&current_time, NULL);
 	// printf("time: %lld \n", return_time(current_time));
 	create_threads(info, philosophers);
-	// pthread_create(&monitor, NULL, &monitor_routine, philosophers);
+	pthread_create(&monitor, NULL, &monitor_routine, philosophers);
 	// printf("acabou!\n");
 	// create_monitor(info, philosophers);
 	// printf("simulation: %d\n", info.simulation_running);
-	// pthread_join(monitor, NULL);
+	pthread_join(monitor, NULL);
 	join_threads(info, philosophers);
 	free(philosophers); // free em cada philosopher?
 	destroy_mutexes(&info);
