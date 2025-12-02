@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:07:07 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 13:32:58 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 20:42:45 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,23 +72,35 @@ void	assign_forks(t_philo_info *info, t_philo *philosophers)
 	}
 }
 
-void	ft_print_forks(t_philo_info info, t_philo *philosophers)
+int	take_both_forks(t_philo *philos)
 {
-	int	i;
-
-	i = 0;
-	while (i < info.num_philos)
+	if (philos->philosopher_id % 2 != 0)
 	{
-		printf("Fork %d: %p\n", i, &info.forks[i]);
-		i++;
+		if (take_left_fork(philos) == 0)
+			return (0);
+		if (take_right_fork(philos) == 0)
+			return (0);
 	}
-	i = 0;
-	while (i < info.num_philos)
+	else
 	{
-		printf("Philosopher %d\nLeft fork:  %p\nRight fork: %p\n",
-			philosophers[i].philosopher_id,
-			philosophers[i].left_fork,
-			philosophers[i].right_fork);
-		i++;
+		if (take_right_fork(philos) == 0)
+			return (0);
+		if (take_left_fork(philos) == 0)
+			return (0);
+	}
+	return (1);
+}
+
+void	drop_forks(t_philo *philos)
+{
+	if (philos->has_left_fork == 1)
+	{
+		philos->has_left_fork = 0;
+		pthread_mutex_unlock(philos->left_fork);
+	}
+	if (philos->has_right_fork == 1)
+	{
+		philos->has_right_fork = 0;
+		pthread_mutex_unlock(philos->right_fork);
 	}
 }

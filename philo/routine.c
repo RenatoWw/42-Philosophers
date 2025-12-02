@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 16:50:39 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 16:01:46 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 20:41:12 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ void	ph_eat(t_philo *philos)
 {
 	struct timeval	last_meal;
 
-	if (take_left_fork(philos) == 0)
+	if (check_phil_death(philos) == 1)
+	{
 		return ;
-	if (take_right_fork(philos) == 0)
-		return ;
+	}
 	gettimeofday(&last_meal, NULL);
 	pthread_mutex_lock(philos->info_table->meal_lock);
 	philos->last_meal_time = time_to_ms(last_meal);
@@ -32,6 +32,8 @@ void	ph_eat(t_philo *philos)
 	ft_sleep(philos->info_table->time_to_eat);
 	pthread_mutex_unlock(philos->left_fork);
 	pthread_mutex_unlock(philos->right_fork);
+	philos->has_left_fork = 0;
+	philos->has_right_fork = 0;
 }
 
 void	ph_sleep(t_philo *philos)
@@ -58,10 +60,11 @@ void	ph_think(t_philo *philos)
 int	take_left_fork(t_philo *philos)
 {
 	pthread_mutex_lock(philos->left_fork);
+	philos->has_left_fork = 1;
 	if (check_phil_death(philos) == 1)
 	{
+		philos->has_left_fork = 0;
 		pthread_mutex_unlock(philos->left_fork);
-		pthread_mutex_unlock(philos->right_fork);
 		return (0);
 	}
 	pthread_mutex_lock(philos->info_table->write_lock);
@@ -74,9 +77,10 @@ int	take_left_fork(t_philo *philos)
 int	take_right_fork(t_philo *philos)
 {
 	pthread_mutex_lock(philos->right_fork);
+	philos->has_right_fork = 1;
 	if (check_phil_death(philos) == 1)
 	{
-		pthread_mutex_unlock(philos->left_fork);
+		philos->has_right_fork = 0;
 		pthread_mutex_unlock(philos->right_fork);
 		return (0);
 	}

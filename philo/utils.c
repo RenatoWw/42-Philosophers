@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:08:09 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 16:00:08 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 17:58:16 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ t_philo	*set_philo_info(t_philo_info *info)
 	{
 		philosophers[i].philosopher_id = i + 1;
 		philosophers[i].meals_eaten = 0;
+		philosophers[i].has_left_fork = 0;
+		philosophers[i].has_right_fork = 0;
 		philosophers[i].last_meal_time = time_to_ms(start_time);
 		philosophers[i].start_time = start_time;
 		philosophers[i].info_table = info;
@@ -69,12 +71,31 @@ t_philo	*set_philo_info(t_philo_info *info)
 	return (philosophers);
 }
 
+int	check_negatives(int argc, char *argv[])
+{
+	int	i;
+
+	i = 0;
+	while (i < argc)
+	{
+		if (ft_atoi(argv[i]) < 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	set_philo_args(t_philo_info *info, int argc, char *argv[])
 {
 	struct timeval	start_time;
 
 	gettimeofday(&start_time, NULL);
 	info->start_time = start_time;
+	if (check_negatives(argc, argv) == 1)
+	{
+		printf("Error: Invalid arguments.\n");
+		return (1);
+	}
 	if (argc != 5 && argc != 6)
 		return (1);
 	info->simulation_running = 1;

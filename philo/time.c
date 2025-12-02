@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 14:36:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 16:08:47 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 14:33:02 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	ft_sleep(int milliseconds)
 		gettimeofday(&time, NULL);
 		current_time = time_to_ms(time);
 		if (current_time - start_time >= milliseconds)
-			break;
+			break ;
 		usleep(50);
 	}
 }

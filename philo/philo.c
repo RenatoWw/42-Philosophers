@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 15:53:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 16:38:55 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 20:50:30 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,12 @@ void	*philo_routine(void *args)
 
 	philos = (t_philo *) args;
 	i = 0;
-	if (philos->philosopher_id % 2 == 0)
-		usleep(philos->info_table->time_to_eat * 500);
 	while (1)
 	{
+		if (take_both_forks(philos) == 0)
+			break ;
+		if (check_phil_death(philos) == 1)
+			break ;
 		ph_eat(philos);
 		if (check_phil_death(philos) == 1)
 			break ;
@@ -34,6 +36,7 @@ void	*philo_routine(void *args)
 			break ;
 		i++;
 	}
+	drop_forks(philos);
 	return (NULL);
 }
 
@@ -45,7 +48,7 @@ int	is_philos_satisfied(t_philo *philos)
 	i = 0;
 	while (i < philos->info_table->num_philos)
 	{
-		if (philos[i].meals_eaten != philos->info_table->meals_num)
+		if (philos[i].meals_eaten < philos->info_table->meals_num)
 		{
 			pthread_mutex_unlock(philos->info_table->meal_lock);
 			return (0);
@@ -53,12 +56,12 @@ int	is_philos_satisfied(t_philo *philos)
 		i++;
 	}
 	pthread_mutex_unlock(philos->info_table->meal_lock);
-	pthread_mutex_lock(philos->info_table->write_lock);
-	printf(GREEN "All philosophers finished eating.\n" RESET);
-	pthread_mutex_unlock(philos->info_table->write_lock);
 	pthread_mutex_lock(philos->info_table->dead_lock);
 	philos->info_table->simulation_running = 0;
 	pthread_mutex_unlock(philos->info_table->dead_lock);
+	pthread_mutex_lock(philos->info_table->write_lock);
+	printf(GREEN "All philosophers finished eating.\n" RESET);
+	pthread_mutex_unlock(philos->info_table->write_lock);
 	return (1);
 }
 
@@ -77,8 +80,6 @@ int	is_philos_dead(t_philo *philos, int id)
 		philos->info_table->simulation_running = 0;
 		pthread_mutex_unlock(philos->info_table->dead_lock);
 		pthread_mutex_lock(philos->info_table->write_lock);
-		printf("%d: %lld\n", philos[id].philosopher_id,
-			time_to_ms(current_time) - philos[id].last_meal_time);
 		printf("%lld ", return_time(philos->start_time));
 		printf(RED "%d died\n" RESET, philos[id].philosopher_id);
 		pthread_mutex_unlock(philos->info_table->write_lock);
@@ -109,8 +110,8 @@ void	*monitor_routine(void *args)
 	return (NULL);
 }
 
-// arrumar is_philos_satisfied - só funciona com 2 por agora
-// arrumar erros do helgrind - aparentemente não tem memory leak
+// criar função para um único filósofo, ele fica num deadlock dps de morrer
+// aparentemente tudo funcionando corretamente, hj foi produtivo
 
 int	main(int argc, char *argv[])
 {	
@@ -127,9 +128,8 @@ int	main(int argc, char *argv[])
 	create_threads(info, philosophers);
 	pthread_create(&monitor, NULL, &monitor_routine, philosophers);
 	pthread_join(monitor, NULL);
-	printf("meals_num: %d\n", info.meals_num);
 	join_threads(info, philosophers);
-	free(philosophers);
 	destroy_mutexes(&info);
+	free(philosophers);
 	return (0);
 }

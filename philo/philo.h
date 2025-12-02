@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 16:30:47 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/11/28 16:00:12 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/02 20:43:01 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,13 @@ typedef struct s_philo {
 	t_philo_info	*info_table;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
+	int				has_left_fork;
+	int				has_right_fork;
 	long long		last_meal_time;
 	int				meals_eaten;
 	int				philosopher_id;
 	struct timeval	start_time;
 }		t_philo;
-
-typedef struct s_table {
-	t_philo			*philo;
-	t_philo_info	info;
-}	t_table;
 
 int			ft_atoi(const char *nptr);
 int			set_philo_args(t_philo_info *info, int argc, char *argv[]);
@@ -59,9 +56,10 @@ int			init_mutexes(t_philo_info *info);
 void		destroy_mutexes(t_philo_info *info);
 void		assign_forks(t_philo_info *info, t_philo *philosophers);
 void		ft_sleep(int milliseconds);
-void		ft_print_forks(t_philo_info info, t_philo *philosophers);
 long long	return_time(struct timeval start_time);
 long long	time_to_ms(struct timeval time);
+int			take_both_forks(t_philo *philos);
+void		drop_forks(t_philo *philos);
 
 void		ph_eat(t_philo *philos);
 void		ph_sleep(t_philo *philos);
