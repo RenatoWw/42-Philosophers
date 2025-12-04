@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 22:07:07 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/12/02 20:42:45 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/04 16:18:46 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,11 @@ void	assign_forks(t_philo_info *info, t_philo *philosophers)
 
 int	take_both_forks(t_philo *philos)
 {
+	if (philos->info_table->num_philos == 1)
+	{
+		take_left_fork(philos);
+		return (0);
+	}
 	if (philos->philosopher_id % 2 != 0)
 	{
 		if (take_left_fork(philos) == 0)

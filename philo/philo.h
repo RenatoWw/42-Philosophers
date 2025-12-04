@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 16:30:47 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/12/02 20:43:01 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/04 15:27:34 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 # define GREEN "\033[32m"
 # define RESET "\033[0m"
 
-typedef struct s_philo_info {
+typedef struct s_philo_info
+{
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*write_lock;
 	pthread_mutex_t	*meal_lock;
@@ -37,7 +38,8 @@ typedef struct s_philo_info {
 	struct timeval	start_time;
 }	t_philo_info;
 
-typedef struct s_philo {
+typedef struct s_philo
+{
 	pthread_t		philosopher;
 	t_philo_info	*info_table;
 	pthread_mutex_t	*right_fork;

@@ -6,7 +6,7 @@
 /*   By: ranhaia- <ranhaia-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 15:53:16 by ranhaia-          #+#    #+#             */
-/*   Updated: 2025/12/02 20:50:30 by ranhaia-         ###   ########.fr       */
+/*   Updated: 2025/12/04 16:19:16 by ranhaia-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int	is_philos_dead(t_philo *philos, int id)
 		pthread_mutex_unlock(philos->info_table->dead_lock);
 		pthread_mutex_lock(philos->info_table->write_lock);
 		printf("%lld ", return_time(philos->start_time));
-		printf(RED "%d died\n" RESET, philos[id].philosopher_id);
+		printf(RED "%d died" RESET, philos[id].philosopher_id);
 		pthread_mutex_unlock(philos->info_table->write_lock);
 		return (1);
 	}
@@ -114,7 +114,7 @@ void	*monitor_routine(void *args)
 // aparentemente tudo funcionando corretamente, hj foi produtivo
 
 int	main(int argc, char *argv[])
-{	
+{
 	t_philo_info	info;
 	t_philo			*philosophers;
 	pthread_t		monitor;
